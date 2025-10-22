@@ -35,6 +35,9 @@ int main(){
     std::vector<std::vector<cv::Point3f>> objpoints;
     std::vector<std::vector<cv::Point2f>> imgpoints;
 
+    cv::imshow("frame",frame);
+    cv::waitKey(0);
+    cv::destroyAllWindows();
 
     while (true) {
         capture >> frame;
@@ -48,15 +51,35 @@ int main(){
         std::vector<cv::Point2f> corners;
         bool found = cv::findChessboardCorners(gray, patternSize, corners, cv::CALIB_CB_ADAPTIVE_THRESH + cv::CALIB_CB_NORMALIZE_IMAGE);
         if (found) {
+
             cv::cornerSubPix(gray, corners, cv::Size(5,5), cv::Size(-1,-1), criteria);
             objpoints.push_back(objp);
             imgpoints.push_back(corners);
         }
-
+        
+        
 
     }
 
+
+
     
+    if (objpoints.empty() || imgpoints.empty()) {
+    std::cerr << "No corners were found — calibration aborted." << std::endl;
+    return -1;
+    }
+
+    std::cout << imgpoints[0].size()<<" "<<imgpoints[1].size() << std::endl;
+    std::cout << objpoints[0].size()<<" "<<objpoints[1].size() << " "<<std::endl;
+
+    cv::Mat cameraMatrix, distCoeffs;
+    std::vector<cv::Mat> rvecs, tvecs;
+    
+    double rms = cv::calibrateCamera(objpoints, imgpoints, cv::Size(image_w, image_h),cameraMatrix, distCoeffs, rvecs, tvecs);
+    // double rms = cv::calibrateCamera(test, imgpoints, cv::Size(3, 3),cameraMatrix, distCoeffs, rvecs, tvecs);
+
+    std::cout << "Camera Matrix:\n" <<  std::endl;
+    std::cout << "Distortion coefficients:\n"  << std::endl;
 
 
 
