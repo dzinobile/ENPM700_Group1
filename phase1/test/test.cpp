@@ -9,7 +9,7 @@
 
 char* argv[] = {
     const_cast<char*>("program_name"),
-    const_cast<char*>("media/cm_dc.csv"),
+    const_cast<char*>("media/test_cal.csv"),
 };
 
 
