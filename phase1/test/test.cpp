@@ -3,18 +3,37 @@
 #include <vector>
 
 #include "camera_model.hpp"
+#include <opencv2/opencv.hpp>
 
 // CameraModel class
 
 char* argv[] = {
     const_cast<char*>("program_name"),
-    const_cast<char*>("cm_dc.csv"),
+    const_cast<char*>("media/cm_dc.csv"),
 };
 
 
 CameraModel cm1(argv);
 TEST(camera_model_test, loads_From_file) {
   EXPECT_EQ(cm1.loadFromFile(),true);
+
+  ASSERT_FLOAT_EQ(1148.94, cm1.K_mat.at<float>(0,0));
+  ASSERT_FLOAT_EQ(0,cm1.K_mat.at<float>(0,1));
+  ASSERT_FLOAT_EQ(968.66,cm1.K_mat.at<float>(0,2));
+
+  ASSERT_FLOAT_EQ(0, cm1.K_mat.at<float>(1,0));
+  ASSERT_FLOAT_EQ(1157.53,cm1.K_mat.at<float>(1,1));
+  ASSERT_FLOAT_EQ(533.109,cm1.K_mat.at<float>(1,2));
+
+  ASSERT_FLOAT_EQ(0, cm1.K_mat.at<float>(2,0));
+  ASSERT_FLOAT_EQ(0,cm1.K_mat.at<float>(2,1));
+  ASSERT_FLOAT_EQ(1,cm1.K_mat.at<float>(2,2));
+
+  ASSERT_FLOAT_EQ(-0.451805,cm1.D_mat.at<float>(0,0));
+  ASSERT_FLOAT_EQ(0.3229,cm1.D_mat.at<float>(0,1));
+  ASSERT_FLOAT_EQ(-0.00175391,cm1.D_mat.at<float>(0,2));
+  ASSERT_FLOAT_EQ(-0.000390606,cm1.D_mat.at<float>(0,3));
+  ASSERT_FLOAT_EQ(-0.160172,cm1.D_mat.at<float>(0,4));
 
 }
 

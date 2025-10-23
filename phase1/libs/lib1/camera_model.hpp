@@ -4,13 +4,14 @@
 #include <vector>
 #include <string>
 
+
 class CameraModel {
 
   public:
     CameraModel(char* argv[]);
     std::string filepath;
-    // cv::Mat K;
-    // cv::Mat D;
+    cv::Mat K_mat = cv::Mat::zeros(3,3,CV_32F);
+    cv::Mat D_mat = cv::Mat::zeros(1,5,CV_32F);
     // std::vector<cv::Mat> rvecs;
     // std::vector<cv::Mat> tvecs;
 
@@ -20,6 +21,7 @@ class CameraModel {
 
 
   private:
+    void read_from_csv(const std::string& filename);
 
 
 };

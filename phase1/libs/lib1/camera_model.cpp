@@ -1,17 +1,17 @@
 #include "camera_model.hpp"
-
+#include <fstream>
+#include <sstream>
+#include <opencv2/opencv.hpp>
 CameraModel::CameraModel(char* argv[]){
   filepath = argv[1];
 
 }
 
 bool CameraModel::loadFromFile(){
-
-
-
+  
   if (filepath.back() == 'v'){
+    read_from_csv(filepath);
     return true;
-
   }
   else {
     return false;
@@ -19,6 +19,72 @@ bool CameraModel::loadFromFile(){
   
 }
 
+
+
+void CameraModel::read_from_csv(const std::string& filename) {
+  std::ifstream file(filename);
+  if (!file.is_open()) {
+    std::cerr << "Error opening" << filename << std::endl;
+    return;
+  }
+
+
+
+  std::string line;
+
+  std::vector<double> values;
+
+  bool readingCamera = false;
+  bool readingDist = false;
+
+  while (std::getline(file, line)) {
+    if (line.empty() || line[0] == '#') continue;
+    std::stringstream ss(line);
+    std::string cell;
+    while (std::getline(ss,cell,',')) {
+      values.push_back(std::stod(cell));
+    }
+
+  }
+
+
+  std::vector<double> cmatrix_values;
+  std::vector<double> dcoeff_values;
+
+  for (int i=0; i<9; i++) {
+    cmatrix_values.push_back(values[i]);
+
+  }
+
+
+  for (int i=9; i<14; i++ ){
+    dcoeff_values.push_back(values[i]);
+  }
+
+
+  int i=0;
+  for(int r=0; r<3; r++){
+    for(int c=0; c<3; c++) {
+      K_mat.at<float>(r,c) = cmatrix_values[i];
+      i++;
+    }
+
+  }
+
+  for (int i = 0; i<5; i++) {
+    D_mat.at<float>(0,i) = dcoeff_values[i];
+  }
+
+
+
+
+
+
+
+
+
+
+}
 
 
 

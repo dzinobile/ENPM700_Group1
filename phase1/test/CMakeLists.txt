@@ -10,8 +10,9 @@ add_executable(cpp-test main.cpp test.cpp)
 #)
 
 #Any dependent libraires needed to build this target.
-target_link_libraries(cpp-test PUBLIC gtest myLib1)
+target_link_libraries(cpp-test PUBLIC gtest myLib1 ${OpenCV_LIBS})
 
 #Enable CMake’s test runner to discover the tests included in the
 #binary, using the GoogleTest CMake module.
         gtest_discover_tests(cpp-test)
+find_package(OpenCV REQUIRED)
