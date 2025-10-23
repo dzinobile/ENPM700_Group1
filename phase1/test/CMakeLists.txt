@@ -1,9 +1,5 @@
 #Any C++ source files needed to build this target(cpp - test).
-add_executable(cpp-test
-#list of source cpp files:
-                         main.cpp test.cpp
-
-               )
+add_executable(cpp-test main.cpp test.cpp)
 
 #Any include directories needed to build this target.
 #Note : we do not need to specify the include directories for the
@@ -14,9 +10,7 @@ add_executable(cpp-test
 #)
 
 #Any dependent libraires needed to build this target.
-    target_link_libraries(cpp-test PUBLIC
-#list of libraries:
-                                    gtest myLib1)
+target_link_libraries(cpp-test PUBLIC gtest myLib1)
 
 #Enable CMake’s test runner to discover the tests included in the
 #binary, using the GoogleTest CMake module.
