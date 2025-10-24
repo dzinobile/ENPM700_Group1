@@ -7,33 +7,111 @@
 
 // CameraModel class
 
-char* argv[] = {
+
+TEST(camera_model_test, loads_From_csv_file) {
+
+  char* argv[] = {
     const_cast<char*>("program_name"),
     const_cast<char*>("media/test_cal.csv"),
-};
+  };
 
 
-CameraModel cm1(argv);
-TEST(camera_model_test, loads_From_file) {
-  EXPECT_EQ(cm1.loadFromFile(),true);
+  CameraModel cm(argv);
+  std::vector<float> correct_kmat_values = {1148.941079262392,0,968.6603818232142,
+                                      0,1157.532465485139,533.1086821168354,
+                                      0,0,1};
+  std::vector<float> correct_dmat_values = {
+                                      -0.4518047618131186, 0.3228995925163289, 
+                                      -0.001753905126417962, -0.0003906063544475221, 
+                                      -0.1601718014427244};
 
-  ASSERT_FLOAT_EQ(1148.94, cm1.K_mat.at<float>(0,0));
-  ASSERT_FLOAT_EQ(0,cm1.K_mat.at<float>(0,1));
-  ASSERT_FLOAT_EQ(968.66,cm1.K_mat.at<float>(0,2));
+  int i = 0;
+  for (int r=0; r<3; r++) {
+    for (int c=0; c<3; c++) {
+      EXPECT_FLOAT_EQ(correct_kmat_values[i],cm.K_mat.at<float>(r,c));
+      i++;
+    }
+  }
 
-  ASSERT_FLOAT_EQ(0, cm1.K_mat.at<float>(1,0));
-  ASSERT_FLOAT_EQ(1157.53,cm1.K_mat.at<float>(1,1));
-  ASSERT_FLOAT_EQ(533.109,cm1.K_mat.at<float>(1,2));
+  for (int c=0; c<5; c++) {
+    EXPECT_FLOAT_EQ(correct_dmat_values[c], cm.D_mat.at<float>(0,c));
+  }
 
-  ASSERT_FLOAT_EQ(0, cm1.K_mat.at<float>(2,0));
-  ASSERT_FLOAT_EQ(0,cm1.K_mat.at<float>(2,1));
-  ASSERT_FLOAT_EQ(1,cm1.K_mat.at<float>(2,2));
+}
 
-  ASSERT_FLOAT_EQ(-0.451805,cm1.D_mat.at<float>(0,0));
-  ASSERT_FLOAT_EQ(0.3229,cm1.D_mat.at<float>(0,1));
-  ASSERT_FLOAT_EQ(-0.00175391,cm1.D_mat.at<float>(0,2));
-  ASSERT_FLOAT_EQ(-0.000390606,cm1.D_mat.at<float>(0,3));
-  ASSERT_FLOAT_EQ(-0.160172,cm1.D_mat.at<float>(0,4));
+TEST(camera_model_test, calibrates_from_file) {
+  char* argv[] = {
+  const_cast<char*>("program_name"),
+  const_cast<char*>("media/test_cal.MOV"),
+  };
+
+  CameraModel cm(argv);
+
+  std::vector<float> correct_kmat_values = {1148.941079262392,0,968.6603818232142,
+                                      0,1157.532465485139,533.1086821168354,
+                                      0,0,1};
+  std::vector<float> correct_dmat_values = {
+                                      -0.4518047618131186, 0.3228995925163289, 
+                                      -0.001753905126417962, -0.0003906063544475221, 
+                                      -0.1601718014427244};
+
+  int i = 0;
+  for (int r=0; r<3; r++) {
+    for (int c=0; c<3; c++) {
+      EXPECT_FLOAT_EQ(correct_kmat_values[i],cm.K_mat.at<float>(r,c));
+      i++;
+    }
+  }
+
+  for (int c=0; c<5; c++) {
+    EXPECT_FLOAT_EQ(correct_dmat_values[c], cm.D_mat.at<float>(0,c));
+  }
+}
+
+TEST(camera_model_test, undistorts_image) {
+  char* argv[] = {
+  const_cast<char*>("program_name"),
+  const_cast<char*>("media/test_cal.csv"),
+  };
+  CameraModel cm(argv);
+
+  cv::Mat test_frame = cv::imread("media/test_frame.jpg");
+
+  cv::Mat undistorted_frame = cm.undistort(test_frame);
+  EXPECT_FALSE(undistorted_frame.empty());
+  EXPECT_EQ(undistorted_frame.size(),test_frame.size());
+  EXPECT_EQ(undistorted_frame.type(),test_frame.type());
+  cv::imshow("test frame",test_frame);
+  cv::waitKey(0);
+  cv::imshow("undistorted frame",undistorted_frame);
+  cv::waitKey(0);
+  cv::destroyAllWindows();
+
+
+}
+
+
+
+
+TEST(camera_model_test, rejects_non_csv_file) {
+
+  char* argv[] = {
+    const_cast<char*>("program_name"),
+    const_cast<char*>("media/test_cal.png"),
+  };
+
+  std::streambuf* originalCerrBuffer = std::cerr.rdbuf();
+  std::stringstream capturedCerr;
+  std::cerr.rdbuf(capturedCerr.rdbuf());
+
+  CameraModel cm(argv);
+
+  std::cerr.rdbuf(originalCerrBuffer);
+  EXPECT_EQ(capturedCerr.str(), "Error: invalid file format\n");
+
+}
+
+TEST(camera_model_test, undistorts_frame) {
 
 }
 
@@ -41,45 +119,3 @@ TEST(camera_model_test, loads_From_file) {
 
 
 
-
-
-// // Compute function
-// PID pidtest1(0.1, 100, -100, 0.1, 0.01, 0.5);
-// TEST(compute_function, this_will_fail) {
-//   EXPECT_EQ(pidtest1.compute(0, 20), -5);
-// }
-
-// // Min bound
-// PID pidtest2(0.1, 1, -1, 0.1, 0.01, 0.5);
-// TEST(min_bounds, this_will_fail) { EXPECT_EQ(pidtest2.compute(0, 200), -1); }
-// // Max bound
-// TEST(max_bounds, this_will_fail) { EXPECT_EQ(pidtest2.compute(0, -200), 1); }
-
-// // Output should be zero if all gains are zero
-// PID pidtest3(0.1, 100, -100, 0, 0, 0);
-// TEST(gains_zero, this_will_fail) { EXPECT_EQ(pidtest3.compute(0, 20), 0); }
-
-// // Value actually approaches desired value over time
-// TEST(value_approaches_desired, this_will_fail) {
-//   double val = 20;
-//   for (int i = 0; i < 100; i++) {
-//     double inc = pidtest1.compute(0, val);
-//     val += inc;
-//   }
-//   EXPECT_NEAR(val, 0, 0.3);
-// }
-
-// // Rate of approach decreases as it gets closer to target
-// TEST(approach_rate_decreases, this_will_fail) {
-//   std::vector<double> values;
-//   double val = 20;
-//   for (int i = 0; i < 100; i++) {
-//     double inc = pidtest1.compute(0, val);
-//     val += inc;
-//     if (i == 0) values.emplace_back(val);
-//     if (i == 5) values.emplace_back(val);
-//     if (i == 94) values.emplace_back(val);
-//     if (i == 99) values.emplace_back(val);
-//   }
-//   EXPECT_GT(abs(values[0] - values[1]), abs(values[2] - values[3]));
-// }
