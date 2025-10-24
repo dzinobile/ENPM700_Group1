@@ -8,7 +8,7 @@
 class CameraModel {
 
   public:
-    CameraModel(char* argv[]);
+    CameraModel(std::string intrinsics_path);
     std::string filepath;
     cv::Mat K_mat = cv::Mat::zeros(3,3,CV_32F);
     cv::Mat D_mat = cv::Mat::zeros(1,5,CV_32F);

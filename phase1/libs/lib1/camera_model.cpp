@@ -1,9 +1,10 @@
 #include "camera_model.hpp"
+#include "config_class.hpp"
 #include <fstream>
 #include <sstream>
 #include <opencv2/opencv.hpp>
-CameraModel::CameraModel(char* argv[]){
-  filepath = argv[1];
+CameraModel::CameraModel(std::string intrinsics_path){
+  filepath = intrinsics_path;
   std::string filetype = filepath.substr(filepath.length()-3);
   if (filetype == "csv"){
     loadFromFile();
