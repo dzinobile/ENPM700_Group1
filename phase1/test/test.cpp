@@ -4,6 +4,7 @@
 #include "config_class.hpp"
 #include "camera_model.hpp"
 #include <opencv2/opencv.hpp>
+#include <chrono>
 
 // CameraModel class
 
@@ -61,24 +62,51 @@ TEST(camera_model_test, loads_From_csv_file) {
 //   }
 // }
 
-// TEST(camera_model_test, undistorts_image) {
+TEST(camera_model_test, undistorts_image) {
 
+
+  CameraModel cm("media/test_cal.csv");
+
+  cv::Mat test_frame = cv::imread("media/test_frame.jpg");
+
+  auto start = std::chrono::high_resolution_clock::now();
+  cv::Mat undistorted_frame = cm.undistort(test_frame);
+  auto end = std::chrono::high_resolution_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+  // std::cout << "Time taken: " << duration.count() << " milliseconds" << std::endl;
+
+  EXPECT_FALSE(undistorted_frame.empty());
+  EXPECT_EQ(undistorted_frame.size(),test_frame.size());
+  EXPECT_EQ(undistorted_frame.type(),test_frame.type());
+  EXPECT_LT(duration.count(),200);
+  cv::imshow("test frame",test_frame);
+  cv::waitKey(0);
+  cv::imshow("undistorted frame",undistorted_frame);
+  cv::waitKey(0);
+  cv::destroyAllWindows();
+
+
+}
+
+// TEST(camera_model_test, undistorts_real_time) {
 //   CameraModel cm("media/test_cal.csv");
+//   cv::VideoCapture capture("media/test_cal.MOV");
+//   cv::Mat frame;
+//   while (true) {
+//     capture >> frame;
+//     if (frame.empty()) {break;}
 
-//   cv::Mat test_frame = cv::imread("media/test_frame.jpg");
+//     cv::Mat new_frame = cm.undistort(frame);
+//     cv::imshow("new frame", new_frame);
+//     cv::waitKey(1);
 
-//   cv::Mat undistorted_frame = cm.undistort(test_frame);
-//   EXPECT_FALSE(undistorted_frame.empty());
-//   EXPECT_EQ(undistorted_frame.size(),test_frame.size());
-//   EXPECT_EQ(undistorted_frame.type(),test_frame.type());
-//   cv::imshow("test frame",test_frame);
-//   cv::waitKey(0);
-//   cv::imshow("undistorted frame",undistorted_frame);
-//   cv::waitKey(0);
+//   }
+
 //   cv::destroyAllWindows();
 
-
 // }
+
+
 
 
 TEST(camera_model_test, rejects_non_csv_file) {
