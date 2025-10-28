@@ -3,8 +3,12 @@
 #include <vector>
 #include "config_class.hpp"
 #include "camera_model.hpp"
+#include "human_detector.hpp"
 #include <opencv2/opencv.hpp>
 #include <chrono>
+#include <fstream>
+#include <filesystem>
+#include <string>
 
 // CameraModel class
 
@@ -142,17 +146,67 @@ TEST(config_test, loads_params){
   EXPECT_EQ(1,cfg_obj.cameraHeight_m);
   EXPECT_EQ(2,cfg_obj.D_max_m);
   EXPECT_EQ(3,cfg_obj.D_close_m);
-
-
-
-
-
-
-
-
 }
 
+// Tests by anvesh
 
+static std::string WriteTempIntrinsicsCSV(float fx, float fy, float cx, float cy) {
+  // mkstemp needs a mutable template ending in XXXXXX
+  char tmpl[] = "/tmp/intrinsics_XXXXXX";
+  int fd = mkstemp(tmpl);   // creates & opens a unique file
+  if (fd == -1) throw std::runtime_error("mkstemp failed");
+  close(fd);                // we'll re-open with ofstream
 
+  const std::string path = tmpl;  // no extension needed
 
+  std::ofstream ofs(path);
+  if (!ofs) throw std::runtime_error("Failed to open temp CSV: " + path);
 
+  // Your loader expects 9 K values (row-major) then 5 distortion coeffs
+  ofs << fx << ",0," << cx << ",\n"
+      << "0," << fy << "," << cy << ",\n"
+      << "0,0,1,\n"
+      << "-0.10,0.01,0.0005,-0.0003,-0.001\n";
+  ofs.close();
+  return path;
+}
+
+TEST(HumanDetectorMath, PixelToGroundBasic) {
+  const auto csv = WriteTempIntrinsicsCSV(800.f, 800.f, 640.f, 360.f);
+  HumanDetector hd("unused", csv);
+
+  // Use default camera_height_m = 1.2 (from Params)
+  // Choose a pixel so that (v - cy) = 400 → Z = fy*h/(v-cy) = 800*1.2/400 = 2.4
+  // Let (u - cx) = 120 → X = Z * 120 / 800 = 2.4 * 0.15 = 0.36
+  const cv::Point2f uv(640.f + 120.f, 360.f + 400.f);
+  const auto Xw = hd.pixelToGround(uv);
+  EXPECT_NEAR(Xw.z, 2.4f, 1e-5f);
+  EXPECT_NEAR(Xw.x, 0.36f, 1e-5f);
+  EXPECT_NEAR(Xw.y, 0.0f, 1e-6f);
+}
+
+TEST(HumanDetectorMath, PixelToGroundSingularityThrows) {
+  const auto csv = WriteTempIntrinsicsCSV(800.f, 800.f, 640.f, 360.f);
+  HumanDetector hd("unused", csv);
+
+  // v == cy → denominator ~ 0 → must throw
+  const cv::Point2f uv(640.f, 360.f);
+  EXPECT_THROW({
+    (void)hd.pixelToGround(uv);
+  }, std::runtime_error);
+}
+
+TEST(HumanDetectorParams, CameraHeightScalesDepth) {
+  const auto csv = WriteTempIntrinsicsCSV(800.f, 800.f, 640.f, 360.f);
+  HumanDetector hd("unused", csv);
+
+  // Base height = 1.2 → with (v - cy) = 400, Z1 = 2.4
+  cv::Point2f uv(640.f, 360.f + 400.f);
+  auto P1 = hd.pixelToGround(uv);
+  EXPECT_NEAR(P1.z, 2.4f, 1e-5f);
+
+  // Double the height → depth must double
+  hd.setCameraHeight(2.4f);
+  auto P2 = hd.pixelToGround(uv);
+  EXPECT_NEAR(P2.z, 4.8f, 1e-5f);
+}
