@@ -1,3 +1,11 @@
+add_custom_target(download_test_data
+  COMMAND bash ${CMAKE_SOURCE_DIR}/scripts/test_media.sh
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+)
+
+
+
+
 #Any C++ source files needed to build this target(cpp - test).
 add_executable(cpp-test main.cpp test.cpp)
 
@@ -16,3 +24,5 @@ target_link_libraries(cpp-test PUBLIC gtest myLib1 ${OpenCV_LIBS})
 #binary, using the GoogleTest CMake module.
         gtest_discover_tests(cpp-test)
 find_package(OpenCV REQUIRED)
+
+add_dependencies(cpp-test download_test_data)

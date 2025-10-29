@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.14)
 project(Group1_Phase1)
 
+
 #
 # GoogleTest Setup
 # ref: https://google.github.io/googletest/quickstart-cmake.html
