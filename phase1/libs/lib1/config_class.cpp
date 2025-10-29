@@ -9,12 +9,6 @@ ConfigClass::ConfigClass(){
     std::cout << "\nEnter extrinsics filepath: ";
     std::cin >> extrinsicsPath;
 
-    std::cout << "\nEnter model path: ";
-    std::cin >> modelPath;
-
-    std::cout << "\nEnter camera height [m]: ";
-    std::cin >> cameraHeight_m;
-
     std::cout << "\nEnter D max: ";
     std::cin >> D_max_m;
 

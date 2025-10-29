@@ -46,7 +46,7 @@ public:
     int    block_size          = 3;     ///< Block size for corner detection (odd, e.g., 3,5,7).
     bool   use_harris          = false; ///< Use Harris detector instead of Shi–Tomasi if true.
     double choose_max_pix_dist = 12.0;  ///< Max click distance (px) to snap to nearest corner.
-    float  camera_height_m     = 0.063f;  ///< Camera height h above ground (meters).
+    float  camera_height_m     = 0.77f;  ///< Camera height h above ground (meters).
     bool   draw_hud            = true;  ///< Draw textual HUD instructions on the display.
   };
 
@@ -63,8 +63,7 @@ public:
  * @throws std::runtime_error / logs if loading or calibration fails internally.
  * @see CameraModel::loadFromFile(), CameraModel::calibrateFromFile()
  */
-HumanDetector(const std::string& window_name,
-    const std::string& intrinsics_path);
+HumanDetector(const std::string& window_name);
 
 /**
 * @brief Construct a HumanDetector with explicit runtime parameters and
@@ -81,7 +80,6 @@ HumanDetector(const std::string& window_name,
 * @see Params, CameraModel::loadFromFile(), CameraModel::calibrateFromFile()
 */
 HumanDetector(const std::string& window_name,
-    const std::string& intrinsics_path,
     const Params& p);
 
 

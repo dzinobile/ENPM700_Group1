@@ -3,9 +3,9 @@
 #include <fstream>
 #include <sstream>
 #include <opencv2/opencv.hpp>
-CameraModel::CameraModel(std::string intrinsics_path){
-  filepath = intrinsics_path;
-  std::string filetype = filepath.substr(filepath.length()-3);
+CameraModel::CameraModel(){
+
+  std::string filetype = intrinsicsPath.substr(intrinsicsPath.length()-3);
   if (filetype == "csv"){
     loadFromFile();
   }
@@ -29,7 +29,7 @@ void CameraModel::calibrateFromFile(){
   int calibrate_samples = 30;
   cv::Size patternSize(6,8);
 
-  cv::VideoCapture capture(filepath);
+  cv::VideoCapture capture(intrinsicsPath);
 
   if (!capture.isOpened()) {
       std::cerr << "Error: could not open video file" << std::endl;
@@ -144,9 +144,9 @@ void CameraModel::calibrateFromFile(){
 void CameraModel::loadFromFile(){
   std::cout << "loading from file" << std::endl;
 
-  std::ifstream file(filepath);
+  std::ifstream file(intrinsicsPath);
   if (!file.is_open()) {
-    std::cerr << "Error opening" << filepath << std::endl;
+    std::cerr << "Error opening" << intrinsicsPath << std::endl;
     return;
   }
 

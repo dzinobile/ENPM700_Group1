@@ -10,10 +10,8 @@
 #include <opencv2/imgproc.hpp>
 
 // Base must be initialized explicitly
-HumanDetector::HumanDetector(const std::string& window_name,
-    const std::string& intrinsics_path)
-: CameraModel(intrinsics_path),  
-window_name_(window_name),
+HumanDetector::HumanDetector(const std::string& window_name)
+: window_name_(window_name),
 params_(Params{}) {
 CV_Assert(!K_mat.empty());
 CV_Assert(K_mat.type() == CV_32F && K_mat.rows == 3 && K_mat.cols == 3);
@@ -21,10 +19,8 @@ cv::namedWindow(window_name_);
 }
 
 HumanDetector::HumanDetector(const std::string& window_name,
-    const std::string& intrinsics_path,
     const Params& p)
-: CameraModel(intrinsics_path),  
-window_name_(window_name),
+: window_name_(window_name),
 params_(p) {
 CV_Assert(!K_mat.empty());
 CV_Assert(K_mat.type() == CV_32F && K_mat.rows == 3 && K_mat.cols == 3);
