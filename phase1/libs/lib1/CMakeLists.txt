@@ -3,7 +3,7 @@
 add_library(myLib1 STATIC
 
 #list of cpp source files:
-                camera_model.cpp config_class.cpp human_detector.cpp)
+                camera_model.cpp config_class.cpp human_detector.cpp yolo_class.cpp)
 
 #Indicate what directories should be added to the include file search
 #path when using this library.

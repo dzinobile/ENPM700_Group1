@@ -60,8 +60,11 @@ endif()
 
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
-# add_executable(camera_calibration calibration_test.cpp)
-# target_link_libraries(camera_calibration ${OpenCV_LIBS})
+add_executable(main_test main_test.cpp)
+target_link_libraries(main_test PUBLIC myLib1 ${OpenCV_LIBS})
+
+
+
 #
 # Create the compilation database for clangd
 #
