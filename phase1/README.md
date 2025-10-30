@@ -1,9 +1,9 @@
 # Group 1 Midterm Project
 ## C++ Badges
-[![CICD Workflow status](https://github.com/dzinobile/ENPM700_Group1/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg)](https://github.com/dzinobile/ENPM700_Group1/actions/workflows/run-unit-test-and-upload-codecov.yml)
+[![CICD Workflow status](https://github.com/dzinobile/ENPM700_Group1/actions/workflows/run-unit-test-and-upload-codecov.yml/badge.svg?branch=development)](https://github.com/dzinobile/ENPM700_Group1/actions/workflows/run-unit-test-and-upload-codecov.yml)
 
 
-[![codecov](https://codecov.io/gh/dzinobile/ENPM700_Group1/graph/badge.svg?token=JSGDsYiuzI)](https://codecov.io/gh/dzinobile/ENPM700_Group1)
+[![codecov](https://codecov.io/gh/dzinobile/ENPM700_Group1/graph/badge.svg?token=JSGDsYiuzI)](https://codecov.io/gh/dzinobile/ENPM700_Group1/branch/development)
 
 
 # Phase 1

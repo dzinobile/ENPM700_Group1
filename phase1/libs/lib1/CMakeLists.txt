@@ -1,6 +1,7 @@
 #Create a library called "myLib1"(in Linux, this library is created
 #with the name of either libmyLib1.a or myLib1.so).
 add_library(myLib1 STATIC
+
 #list of cpp source files:
                 camera_model.cpp config_class.cpp human_detector.cpp)
 
