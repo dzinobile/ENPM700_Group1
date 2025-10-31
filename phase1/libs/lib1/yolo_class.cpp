@@ -31,7 +31,7 @@ YoloClass::YoloClass(){
 
 }
 
-cv::Mat YoloClass::highlight_people(cv::Mat frame) {
+std::pair<std::vector<cv::Rect>, cv::Mat> YoloClass::highlightPeople(cv::Mat frame) {
 
 
     cv::Mat blob;
@@ -103,7 +103,7 @@ cv::Mat YoloClass::highlight_people(cv::Mat frame) {
                 cv::FONT_HERSHEY_SIMPLEX, 0.5, cv::Scalar(0, 255, 0), 2);
     }
 
-
-    return frame;
+    std::pair<std::vector<cv::Rect>, cv::Mat> output = std::make_pair(boxes, frame);
+    return output;
 
 }
